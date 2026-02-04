@@ -1,22 +1,24 @@
 import os
 from pathlib import Path
-
+from fastapi import APIRouter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 
 # Docs live next to backend (ai-ops-manager/docs); vectorstore inside backend
-_BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
-_DOCS_DIR = _BACKEND_DIR.parent / "docs"
-_VECTOR_DIR = _BACKEND_DIR / "vectorstore"
+BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+DOCS_DIR = BACKEND_DIR.parent / "docs"
+VECTOR_DIR = BACKEND_DIR / "vectorstore"
 
+router = APIRouter()
 
+@router.post("/ingest")
 def ingest_docs():
     docs = []
-    if not _DOCS_DIR.exists():
+    if not DOCS_DIR.exists():
         return 0
 
-    for file in sorted(_DOCS_DIR.iterdir()):
+    for file in sorted(DOCS_DIR.iterdir()):
         if file.suffix.lower() == ".pdf":
             docs.extend(PyPDFLoader(str(file)).load())
         elif file.suffix.lower() in (".md", ".txt", ".text"):
@@ -25,11 +27,13 @@ def ingest_docs():
     if not docs:
         return 0
 
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
     vector_db = Chroma.from_documents(
         docs,
-        embeddings,
-        persist_directory=str(_VECTOR_DIR),
+        embeddings = OllamaEmbeddings(model="nomic-embed-text"),
+        persist_directory=VECTOR_DIR,
     )
-    vector_db.persist()
-    return len(docs)
+    if __name__ == "__main__":
+        ingest_docs()
+        print("Documents ingested successfully")
+    else:
+        print("Documents not ingested")

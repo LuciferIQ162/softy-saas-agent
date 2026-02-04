@@ -6,8 +6,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 VECTOR_DIR = os.path.join(BASE_DIR, "vectorstore")
 
 vectorDB = Chroma(
-    persist_directory='vectorstore',
-    embedding_function=OllamaEmbeddings(model="mistral")
+    persist_directory='VECOR_DIR',
+    embedding_function=OllamaEmbeddings(model="nomic-embed-text")
 )
 
 def retrieve_context(query: str):
