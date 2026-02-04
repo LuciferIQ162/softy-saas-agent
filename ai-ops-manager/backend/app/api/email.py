@@ -9,11 +9,14 @@ router = APIRouter()
 @router.post("/process")
 def process_email(email: EmailInput):
     classification = classify_email(email.subject , email.body)
-    context = retrieve_context(email.body)
+    context = retrieve_context(f"{email.subject}\n{email.body}")
     action = decide_action(classification.intent)
     
     return {
         "classification" : classification,
         "action" : action,
-        "context_used" : context[:500]
+        "context_used": {
+            "found": bool(context),
+            "text": context[:500] if context else "",
+        },
     }
