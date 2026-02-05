@@ -1,0 +1,23 @@
+# Core API
+fastapi
+uvicorn
+
+# Data validation
+pydantic
+
+# LangChain core
+langchain
+langchain-community
+
+# Ollama (local LLM + embeddings)
+ollama
+
+# Vector database
+chromadb
+
+# Document loaders
+pypdf
+
+# Utilities
+python-dotenv
+regex
